@@ -1,0 +1,176 @@
+# run all database creation script and then run the subsequent Insertion script
+drop database covidDB;
+create database covidDB;
+
+create table company (
+	companyName		varchar(30) not null,
+  	companyStreet	varchar(20),
+  	companyCity		varchar(20),
+  	companyProvince	varchar(15),
+  	companyPostCode	varchar(6),
+	primary key (companyName));
+    
+create table vaccine (
+  	lot			char(6),
+	expiry		date,
+	producedOn	date,
+	doses		int,
+	compName	varchar(30) not null,
+  	primary key (lot),
+	foreign key (compName) references company(companyName) on delete cascade);
+    
+create table patient (
+  	ohipPatient			char(10) not null,
+	firstNamePatient	varchar(15),
+	lastNamePatient		varchar(15),
+	dob					date,
+	primary key (ohipPatient));
+
+create table spouse (
+	ohipSpouse		char(10) not null,
+	phoneNumSpouse	char(10),
+	firstNameSpouse	varchar(15),
+	lastNameSpouse	varchar(15),
+	ohipPartner 	char(10) not null,
+  	primary key (ohipSpouse),
+	foreign key (ohipPartner) references patient(ohipPatient) on delete cascade);
+    
+create table practice (
+  	practiceName		varchar(20) not null,
+	phoneNumPractice	char(10),
+	primary key (practiceName));
+
+create table healthcareWorker (
+  	id				varchar(9) not null,
+	firstNameHCW	varchar(15),
+	lastNameHCW		varchar(15),
+	primary key (id));
+    
+create table doctor (
+ 	id	varchar(9) not null,
+	foreign key (id) references healthcareWorker(id) on delete cascade,
+	pracName	varchar(20) not null,
+	foreign key (pracName) references practice(practiceName) on delete cascade);
+
+create table nurse	(
+	id	varchar(9) not null,
+	foreign key (id) references healthcareWorker(id) on delete cascade);
+
+create table vaxClinic (
+  	vaxClinicName	varchar(20) not null,
+	clinicStreet	varchar(20),
+  	clinicCity		varchar(20),
+  	clinicProvince	varchar(15),
+  	clinicPostCode	varchar(6),
+	primary key (vaxClinicName));
+    
+create table vaccination (
+  	vaxLot		char(6) not null,
+	clinicName	varchar(20) not null,
+	patientOhip	char(10) not null,
+	primary key(vaxLot, clinicName, patientOhip),
+  	foreign key (vaxLot) references vaccine(lot) on delete cascade,
+  	foreign key (clinicName) references vaxClinic(vaxClinicName) on delete cascade,
+  	foreign key (patientOhip) references patient(ohipPatient) on delete cascade,
+	vaxDate		date,
+	vaxTime		time);
+    
+create table shipsTo (
+  	vaxLot		char(6) not null,
+	clinicName	varchar(20) not null,
+	primary key(vaxLot, clinicName),
+	foreign key (vaxLot) references vaccine(lot) on delete cascade,
+	foreign key (clinicName) references vaxClinic(vaxClinicName) on delete cascade);
+
+create table nurseWorksAt (
+	nurseId		varchar(9) not null,
+	clinicName	varchar(20) not null,
+	primary key(nurseId, clinicName),
+	foreign key (nurseId) references nurse(id) on delete cascade,
+	foreign key (clinicName) references vaxClinic(vaxClinicName) on delete cascade);
+
+create table doctorWorksAt (
+	docId	varchar(9),
+	clinicName	varchar(20),
+	primary key(docId, clinicName),
+	foreign key (docId) references doctor(id) on delete cascade,
+	foreign key (clinicName) references vaxClinic(vaxClinicName) on delete cascade);
+
+# Run this section AFTER making all tables (ie,, running script above)
+# Companies
+INSERT INTO company VALUES ('Pfizer', 'University Ave', 'Kingston', 'Ontario', 'K7L4R7');
+INSERT INTO company VALUES ('Moderna', 'King St', 'Kingston', 'Ontario', 'K7X4T7');
+INSERT INTO company VALUES ('Johnson & Johnson', 'Division St', 'Kingston', 'Ontario', 'T7L3R8');
+
+# Vaccines
+INSERT INTO vaccine VALUES ('124734', '2022-05-13', '2022-01-01', 10, 'Pfizer');
+INSERT INTO vaccine VALUES ('173207', '2022-05-20', '2022-01-10', 10, 'Pfizer');
+INSERT INTO vaccine VALUES ('109387', '2022-06-16', '2022-02-08', 15, 'Moderna');
+INSERT INTO vaccine VALUES ('928734', '2022-06-13', '2022-02-01', 15, 'Moderna');
+INSERT INTO vaccine VALUES ('233440', '2022-07-13', '2022-01-15', 6, 'Johnson & Johnson');
+INSERT INTO vaccine VALUES ('111387', '2022-05-13', '2022-01-10', 6, 'Johnson & Johnson');
+
+# Patients
+INSERT INTO patient VALUES ('1793278921', 'James', 'Young', '2000-02-28');
+INSERT INTO patient VALUES ('0394871087', 'Kyle', 'Swan', '1983-03-21');
+INSERT INTO patient VALUES ('1098173407', 'David', 'Travis', '1998-04-01');
+INSERT INTO patient VALUES ('1098374173', 'Sam', 'Lock', '2001-05-08');
+INSERT INTO patient VALUES ('0948751734', 'Emma', 'Ty', '2002-06-18');
+INSERT INTO patient VALUES ('3947108374', 'Taylor', 'Black', '1967-07-217');
+
+# Spouses
+INSERT INTO spouse VALUES ('8393228371', '4038174829', 'Elise', 'Tyler', '1793278921');
+INSERT INTO spouse VALUES ('2304972091', '4033408203', 'Samantha', 'James', '0394871087');
+INSERT INTO spouse VALUES ('2340978340', '4038173942', 'Johnathan', 'Daniels', '3947108374');
+
+# Practices
+INSERT INTO practice VALUES ('South Health', '4037184392');
+INSERT INTO practice VALUES ('North Health', '4039273937');
+INSERT INTO practice VALUES ('West Health', '4071830271');
+INSERT INTO practice VALUES ('East Health', '7597391739');
+
+# Healthcare Worker
+INSERT INTO healthcareWorker VALUES ('193750397', 'John', 'Yu');
+INSERT INTO healthcareWorker VALUES ('109837410', 'Jenna', 'Strand');
+INSERT INTO healthcareWorker VALUES ('019873098', 'Ben', 'Wall');
+INSERT INTO healthcareWorker VALUES ('739871340', 'Andrew', 'Waterson');
+INSERT INTO healthcareWorker VALUES ('801394871', 'Emma', 'Picas');
+INSERT INTO healthcareWorker VALUES ('234987103', 'Danielle', 'Levett');
+
+# Doctors
+INSERT INTO doctor VALUES ('193750397', 'South Health');
+INSERT INTO doctor VALUES ('109837410', 'North Health');
+INSERT INTO doctor VALUES ('019873098', 'West Health');
+
+# Nurses
+INSERT INTO nurse VALUES ('739871340');
+INSERT INTO nurse VALUES ('801394871');
+INSERT INTO nurse VALUES ('234987103');
+
+# Vaccination Clinics
+INSERT INTO vaxClinic VALUES ('North Clinic', 'Macdonald St', 'Kingston', 'Ontario', 'K3L4J6');
+INSERT INTO vaxClinic VALUES ('South Clinic', 'Princess St', 'Kingston', 'Ontario', 'K5L4M6');
+INSERT INTO vaxClinic VALUES ('West Clinic', 'Earl St', 'Kingston', 'Ontario', 'K3L4K7');
+
+# Vaccinations
+INSERT INTO vaccination VALUES ('124734', 'North Clinic', '1793278921', '2022-01-18', '19:30:10');
+INSERT INTO vaccination VALUES ('173207', 'South Clinic', '1793278921', '2022-01-30', '15:30:10');
+INSERT INTO vaccination VALUES ('124734', 'North Clinic', '1098173407', '2022-01-20', '12:35:10');
+INSERT INTO vaccination VALUES ('109387', 'North Clinic', '1098374173', '2022-02-08', '09:40:11');
+
+# Ships To
+INSERT INTO shipsTo VALUES ('124734', 'North Clinic');
+INSERT INTO shipsTo VALUES ('173207', 'South Clinic');
+INSERT INTO shipsTo VALUES ('109387', 'North Clinic');
+INSERT INTO shipsTo VALUES ('928734', 'West Clinic');
+
+# Nurse works at vax clinic
+INSERT INTO nurseWorksAt VALUES ('739871340', 'North Clinic');
+INSERT INTO nurseWorksAt VALUES ('801394871', 'West Clinic');
+INSERT INTO nurseWorksAt VALUES ('234987103', 'South Clinic');
+
+# Doctor works at vax clinic
+INSERT INTO doctorWorksAt VALUES ('193750397', 'South Clinic');
+INSERT INTO doctorWorksAt VALUES ('109837410', 'North Clinic');
+INSERT INTO doctorWorksAt VALUES ('019873098', 'North Clinic');
+

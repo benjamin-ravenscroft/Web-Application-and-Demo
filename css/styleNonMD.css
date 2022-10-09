@@ -1,0 +1,57 @@
+.submit {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 16px;
+    display: inline-block;
+    background-color: #6002ee;
+    transition-duration: 0.2s;
+    border-radius: 20px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.19), 0 3px 3px rgba(0,0,0,0.23);;
+}
+
+.submit:hover {
+    background-color:#9965f4 ;
+    color: white;
+}
+
+.body   {
+    font-family: 'Roboto', sans-serif;
+}
+
+.textfield {
+    border-width: 0px;
+    border-bottom-width: 1px;
+}
+
+.textfield:focus {
+    border-width: 0px;
+    border-bottom-width: 1px;
+    outline: none;
+}
+
+.card {
+    box-shadow: 0px 6px 12px 0px rgba(0,0,0,0.25);
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.card:hover {
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.35);
+}
+
+.card-container {
+    padding: 2px 16px;
+}
+
+.card-header-container {
+    margin-top: 0px;
+    top: 0;
+    z-index: 2;
+}
+
+.card-body-container {
+    padding-top: 1em;
+    margin-top: 0px;
+}
